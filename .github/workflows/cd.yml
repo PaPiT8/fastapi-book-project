@@ -21,33 +21,33 @@ jobs:
 
       - name: "Tag Docker Images"
         run: |
-         docker tag fastapi-app:latest ${{ papit8 }}/fastapi-app:latest
+         docker tag fastapi-app:latest ${{ secrets.DOCKER_HUB_USERNAME }}/fastapi-app:latest
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v3 
         with:
-          username: ${{ papit8 }}
-          password: ${{ dckr_pat_lkNC_T4GNfOHFN8-bjJO4JejrbI }}
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
 
       - name: "Push to Docker Hub"
         run: |
-          docker push ${{ papit8 }}/fastapi-app:latest
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/fastapi-app:latest
 
       - name: Add SSH private key
         run: |
          mkdir -p ~/.ssh
-         echo "${{ MIIEogIBAAKCAQEAxal8nHyTp8SABav3ff7U5nYWf3CwtWWgzWGqYqfPYh8s64s+Q52p6yNAEC1n1txYBXY8vEq+rjK0LVD4JY2DkOeki3dUroqrG2p7EvX61vhSOix2ic5IfcUXMKrzx66lSf/p4mYW0dzgMb6WpviXdDie/Dghfm/peJ1ZKW0uZXT6OB/gJuyEl9++G0TLn5Zijn5lT+A7CiBkILrh0kEFbcMEdGdKHQ1k825bI3IvKsgb3061Am7m9NJ9sRr2DFbRV7PBY2K0KquEYRDE+DcFZXRXK0sZBJS2UaRLKvoa1QJMalbspbxIruRaLKldVCdK8HIhdErm5YPGorH/b/oZ1wIDAQABAoIBABXGmkfTIaE18LSvQVDMJkBNeiUIES+qxpBZ1h+QRTSWIqjAalegovuYopIlrm7pT3kqkX5c7azbQSZM6UmZ0YjBPEtxFg80j60xieWI292a9dQa2eRMqYfRksB11O2GvAbu/qFGhfUQ1FImoQo8ENNo+Xrn5Ci9w4baLtx1fssGankHQ2LAhjanX5d5x14R4s8Ve8BvFy9mpkXcVKi+RqQHF/sljzxFnQqRCNoz+C8sjEXER2wE+otJhSHzgFa+d5vZUC3w2aJkyHW9UiuBMF5d0koagxUDRiKu9hSxK0rHw2kv5L8/pZKTH5aCce0PbK2n2O0XjnALlml74w8e/CECgYEA7OtprDpRpyxGiRbsVz9G9lLLE4KhgiLu10FFfgO8IUafJ4g4KgZCnXQ6qKvOsE26q7ANVS6FuB+NsGMba9MZFOX73C3YARGRYmkpSUvHIwruZRmNkLU/F8/+KpTIW7fHWD1luJyckQE6ZVZEoW2jrvayfG8STuLu2DvrN6dEJ8UCgYEA1ZSy7RSajAo/ffUfDh+XlQucPilVJQebb8euUMN+h+ICG4f/q5VF1vMk02YF1vgdoFL5/hj3jvuzsmBFhZsAzvEMI+x2t4WD1dvmoqWm6wVZPxWu4dIEPW0v0L/rHdt0mafKRhQH3HmWl1CTzja9snzrzbEZjNHc5JPL3fHEuOsCgYBbnq4+7E6nV3fvi+3Zz56ho2LlKJ9MtDWpCJTXJpqaQ7VIlGUj20fnnAsTL12+0FBgFLUTO+p6SbmBfNId4ITSkB3WB+SAhUqzw/czYRqhcpi+gCM+0tiTXNvtm5vf3DI67YNo4Seq686pYbMouj2Sa9SaSlnKJ/g1pvZPj1/MAQKBgCdFKgjxauEo2Te9pDIimOpsshOz4dXnKitJWcG70D4Hzj9lqBrSXX8CQdkkvxohkMDzwMd5q7r8iLPZg67nKyThqUvJpKJlyDHANw3cy24XE6vHvtoClYj91Hbbcs2QlkXSVhzAfhmJuaikxih6ZDK3SVwOnhYIWEcm7asnUvZ1AoGAC1Ezb7kWqCzNnDzOt+og2b9UnWsWMumlRRlKDWkNhXKGTrYEZtxBsuona/PzJlzcNLPBZnu3XsQsR+UrrCC97ViV2PmC2S2DoS2HauJ46QZCS4eaM2pzWfGLbaikUW60SoL4Z+CFN4crM0ho64mita/5RZ28C1251eWGcD2kjlE= }}" > ~/.ssh/id_rsa
+         echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
          chmod 600 ~/.ssh/id_rsa
 
       - name: Add SSH known hosts #
         run: |
-         ssh-keyscan -t rsa ${{ 16.171.9.10 }} >> ~/.ssh/known_hosts
+         ssh-keyscan -t rsa ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
 
       - name: Deploy to server
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ i-0cc750a4e65ad5635 }}@${{ 16.171.9.10 }} << 'EOF'
-          sudo docker pull ${{ papit8 }}/fastapi-app:latest
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+          sudo docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/fastapi-app:latest
           sudo docker stop fastapi-app || true
           sudo docker rm fastapi-app || true
-          sudo docker run -d --name fastapi-app -p 8000:8000 ${{ papit8 }}/fastapi-app:latest
+          sudo docker run -d --name fastapi-app -p 8000:8000 ${{ secrets.DOCKER_HUB_USERNAME }}/fastapi-app:latest
           EOF
